@@ -118,6 +118,11 @@ func (t *Trimble) identify(username, password string, ip net.IP, timeout time.Du
 		}
 	}
 
+	// had to have found a model
+	if _, ok := s["model"]; !ok {
+		return nil, nil
+	}
+
 	return &s, nil
 }
 
