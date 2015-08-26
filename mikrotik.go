@@ -83,9 +83,9 @@ func (m *MikroTik) Identify(orig string, ip net.IP, timeout time.Duration, retri
 	}
 
 	// state ....
-	s := make(State)
+	s := State{Values: make(map[string]interface{})}
 
-	s["model"] = label
+	s.Values["model"] = label
 
 	// status ...
 	oids := []string{
@@ -107,33 +107,33 @@ func (m *MikroTik) Identify(orig string, ip net.IP, timeout time.Duration, retri
 				case ".1.3.6.1.2.1.1.1.0":
 					if f := strings.Fields((string)(v.Value.([]byte))); len(f) > 0 {
 						if a := strings.Join(f[1:], " "); a != "" {
-							s["version"] = a
+							s.Values["version"] = a
 						}
 					}
 				case ".1.3.6.1.2.1.1.5.0":
 					if a := (string)(v.Value.([]byte)); a != "" {
-						s["name"] = a
+						s.Values["name"] = a
 					}
 
 				case ".1.3.6.1.2.1.1.6.0":
 					if a := (string)(v.Value.([]byte)); a != "" {
-						s["location"] = a
+						s.Values["location"] = a
 					}
 				case ".1.3.6.1.4.1.14988.1.1.7.3.0":
 					if a := (string)(v.Value.([]byte)); a != "" {
-						s["serial"] = a
+						s.Values["serial"] = a
 					}
 				case ".1.3.6.1.4.1.14988.1.1.7.4.0":
 					if a := (string)(v.Value.([]byte)); a != "" {
-						s["firmware"] = a
+						s.Values["firmware"] = a
 					}
 				case ".1.3.6.1.4.1.14988.1.1.4.4.0":
 					if a := (string)(v.Value.([]byte)); a != "" {
-						s["software"] = a
+						s.Values["software"] = a
 					}
 				case ".1.3.6.1.4.1.14988.1.1.4.1.0":
 					if a := (string)(v.Value.([]byte)); a != "" {
-						s["license"] = a
+						s.Values["license"] = a
 					}
 				}
 			}

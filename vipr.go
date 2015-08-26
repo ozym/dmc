@@ -38,10 +38,10 @@ func (v *ViPR) MatchString(s string) bool {
 
 func (v *ViPR) Identify(orig string, ip net.IP, timeout time.Duration, retries int) (*State, error) {
 
-	s := make(State)
+	s := State{Values: make(map[string]interface{})}
 
 	// default model
-	s["model"] = "ViPR Radio"
+	s.Values["model"] = "ViPR Radio"
 
 	cli := &http.Client{}
 	pages := []string{"UStatus.html", "ViPRDiag.html", "IPSetting.html"}
@@ -52,16 +52,16 @@ func (v *ViPR) Identify(orig string, ip net.IP, timeout time.Duration, retries i
 		}
 		for key, value := range r {
 			if t := value; key == "name" {
-				s[key] = t
+				s.Values[key] = t
 			}
 			if t := value; key == "version" {
-				s[key] = strings.Replace(t, "Dataradio ViPR ", "", -1)
+				s.Values[key] = strings.Replace(t, "Dataradio ViPR ", "", -1)
 			}
 			if t := value; key == "firmware" {
-				s[key] = t
+				s.Values[key] = t
 			}
 			if t := value; key == "macaddr" {
-				s[key] = t
+				s.Values[key] = t
 			}
 		}
 	}

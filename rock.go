@@ -46,7 +46,7 @@ func (r *Rock) Identify(orig string, ip net.IP, timeout time.Duration, retries i
 		Jar:       cookieJar,
 	}
 
-	s := make(State)
+	s := State{Values: make(map[string]interface{})}
 
 	resp, err := client.Get("http://" + ip.String() + "/")
 	if resp == nil || err != nil {
@@ -76,11 +76,11 @@ func (r *Rock) Identify(orig string, ip net.IP, timeout time.Duration, retries i
 
 	switch {
 	case strings.Contains(raw, "rockhound.jpg"):
-		s["model"] = "Kinemetrics Slate"
+		s.Values["model"] = "Kinemetrics Slate"
 	case strings.Contains(raw, "basalt.jpg"):
-		s["model"] = "Kinemetrics Basalt"
+		s.Values["model"] = "Kinemetrics Basalt"
 	default:
-		s["model"] = "Kinemetrics Rock"
+		s.Values["model"] = "Kinemetrics Rock"
 	}
 
 	doc.Find("h4").Each(func(i int, g *goquery.Selection) {
@@ -91,7 +91,7 @@ func (r *Rock) Identify(orig string, ip net.IP, timeout time.Duration, retries i
 		}
 		switch y[0] {
 		case "Station":
-			s["code"] = y[1]
+			s.Values["code"] = y[1]
 		}
 	})
 
@@ -121,14 +121,14 @@ func (r *Rock) Identify(orig string, ip net.IP, timeout time.Duration, retries i
 			if len(b) > 1 {
 				switch {
 				case strings.Contains(y, "filesystem"):
-					s["filesystem"] = b[len(b)-1]
+					s.Values["filesystem"] = b[len(b)-1]
 				case strings.Contains(y, "Update"):
-					s["hardware"] = strings.Join(b[0:2], " ")
-					s["update"] = b[len(b)-1]
+					s.Values["hardware"] = strings.Join(b[0:2], " ")
+					s.Values["update"] = b[len(b)-1]
 				case strings.Contains(y, "Serial number"):
-					s["serial"] = b[len(b)-1]
+					s.Values["serial"] = b[len(b)-1]
 				case strings.Contains(y, "Software version"):
-					s["software"] = b[len(b)-1]
+					s.Values["software"] = b[len(b)-1]
 				}
 			}
 		}

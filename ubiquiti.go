@@ -73,10 +73,10 @@ func (m *Ubiquiti) Identify(orig string, ip net.IP, timeout time.Duration, retri
 	}
 
 	// state ....
-	s := make(State)
+	s := State{Values: make(map[string]interface{})}
 
 	// default model
-	s["model"] = "Ubiquiti AirOS"
+	s.Values["model"] = "Ubiquiti AirOS"
 
 	// load in snmp derived details
 	for _, v := range r.Variables {
@@ -85,25 +85,25 @@ func (m *Ubiquiti) Identify(orig string, ip net.IP, timeout time.Duration, retri
 			switch v.Name {
 			case ".1.2.840.10036.3.1.2.1.3.5":
 				if a := (string)(v.Value.([]byte)); a != "" {
-					s["version"] = a
+					s.Values["version"] = a
 				}
 			case ".1.2.840.10036.3.1.2.1.4.5":
 				if a := (string)(v.Value.([]byte)); a != "" {
-					s["firmware"] = a
+					s.Values["firmware"] = a
 				}
 
 			case ".1.3.6.1.2.1.1.5.0":
 				if a := (string)(v.Value.([]byte)); a != "" {
-					s["name"] = a
+					s.Values["name"] = a
 				}
 
 			case ".1.3.6.1.2.1.1.6.0":
 				if a := (string)(v.Value.([]byte)); a != "" {
-					s["location"] = a
+					s.Values["location"] = a
 				}
 			case ".1.3.6.1.4.1.29956.3.1.1.1.1.12.1":
 				if a := (string)(v.Value.([]byte)); a != "" {
-					s["serial"] = a
+					s.Values["serial"] = a
 				}
 			}
 		}

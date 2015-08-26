@@ -18,7 +18,9 @@ const (
 	GNSSModel
 )
 
-type State map[string]interface{}
+type State struct {
+	Values map[string]interface{}
+}
 
 //{
 /*
@@ -38,24 +40,18 @@ type State map[string]interface{}
 */
 //}
 
-func (s *State) Marshal() string {
+func (s *State) Marshal() []byte {
 
-	r, err := json.MarshalIndent(s, "", "  ")
+	r, err := json.MarshalIndent(s.Values, "", "  ")
 	if err != nil {
 		panic(err)
 	}
 
-	return (string)(r)
+	return r
 }
 
 func (s *State) String() string {
-	/*
-		if s.Model != nil {
-			return s.Make + " " + *s.Model
-		}
-	*/
-	//return s.Make
-	r, err := json.Marshal(s)
+	r, err := json.Marshal(s.Values)
 	if err != nil {
 		panic(err)
 	}

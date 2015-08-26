@@ -64,7 +64,7 @@ func (c *Cusp) Identify(orig string, ip net.IP, timeout time.Duration, retries i
 		return nil, err
 	}
 
-	s := make(State)
+	s := State{Values: make(map[string]interface{})}
 
 	/*
 	   <div class='boxhdr'>Firmware and sensor parameters:</div><div class='box'><table bgcolor='#FFFFFF' border='0'>
@@ -80,7 +80,7 @@ func (c *Cusp) Identify(orig string, ip net.IP, timeout time.Duration, retries i
 	doc.Find("div p").Each(func(i int, g *goquery.Selection) {
 		if strings.Contains(g.Text(), "Administrator Access") {
 			if p := strings.Fields(strings.Replace(g.Text(), "'", "", -1)); len(p) > 0 {
-				s["site"] = p[0]
+				s.Values["site"] = p[0]
 			}
 		}
 	})
@@ -91,28 +91,28 @@ func (c *Cusp) Identify(orig string, ip net.IP, timeout time.Duration, retries i
 			switch g.Text() {
 			case "Sensor serial number":
 				if p := strings.Fields(g.Next().Text()); len(p) > 0 {
-					s["serial"] = p[0]
+					s.Values["serial"] = p[0]
 				}
 			case "Data acquisition firmware revision":
 				if p := strings.Fields(g.Next().Text()); len(p) > 1 {
-					s["hardware"] = strings.Join(p[0:len(p)-1], " ")
-					s["software"] = p[len(p)-1]
+					s.Values["hardware"] = strings.Join(p[0:len(p)-1], " ")
+					s.Values["software"] = p[len(p)-1]
 				}
 			case "Sensor firmware revision":
 				if p := strings.Fields(g.Next().Text()); len(p) > 0 {
-					s["firmware"] = p[0]
+					s.Values["firmware"] = p[0]
 				}
 			}
 
 		}
 	})
 
-	if _, ok := s["hardware"]; !ok {
+	if _, ok := s.Values["hardware"]; !ok {
 		return nil, nil
 	}
 
-	if p := strings.Fields(s["hardware"].(string)); len(p) > 0 {
-		s["model"] = "CSI Cusp " + strings.Replace(p[len(p)-1], "+", "", -1)
+	if p := strings.Fields(s.Values["hardware"].(string)); len(p) > 0 {
+		s.Values["model"] = "CSI Cusp " + strings.Replace(p[len(p)-1], "+", "", -1)
 	}
 
 	return &s, nil

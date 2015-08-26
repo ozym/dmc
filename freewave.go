@@ -62,10 +62,10 @@ func (f *Freewave) Identify(orig string, ip net.IP, timeout time.Duration, retri
 		return nil, nil
 	}
 
-	s := make(State)
+	s := State{Values: make(map[string]interface{})}
 
 	// default model
-	s["model"] = "Freewave Spread Spectrum Radio"
+	s.Values["model"] = "Freewave Spread Spectrum Radio"
 
 	r, err := snmp.Get([]string{
 		".1.3.6.1.2.1.1.1.0",
@@ -86,27 +86,27 @@ func (f *Freewave) Identify(orig string, ip net.IP, timeout time.Duration, retri
 				l = strings.Replace(strings.Replace(strings.Replace(l, " (", ";", -1), " ;", ";", -1), ")", "", -1)
 				f := strings.Split(l, ";")
 				if len(f) > 0 {
-					s["model"] = f[0]
+					s.Values["model"] = f[0]
 					for _, j := range f[1:] {
 						if k := strings.Fields(j); len(k) > 2 {
-							s[k[0]] = k[2]
+							s.Values[k[0]] = k[2]
 						}
 					}
 				}
 			case ".1.3.6.1.2.1.1.5.0":
 				if a := (string)(v.Value.([]byte)); a != "" {
-					s["name"] = a
+					s.Values["name"] = a
 				}
 			case ".1.3.6.1.2.1.1.6.0":
 				if a := (string)(v.Value.([]byte)); a != "" {
-					s["location"] = a
+					s.Values["location"] = a
 				}
 			}
 		case gosnmp.Integer:
 			switch v.Name {
 			case ".1.3.6.1.4.1.29956.3.1.1.1.1.12.1":
 				if a := strconv.Itoa(v.Value.(int)); a != "" {
-					s["serial"] = a
+					s.Values["serial"] = a
 				}
 			}
 		}

@@ -38,10 +38,10 @@ func (h *Hongdian) MatchString(s string) bool {
 
 func (h *Hongdian) Identify(orig string, ip net.IP, timeout time.Duration, retries int) (*State, error) {
 
-	s := make(State)
+	s := State{Values: make(map[string]interface{})}
 
 	// default model
-	s["model"] = "Hongdian Cellular Modem"
+	s.Values["model"] = "Hongdian Cellular Modem"
 
 	cli := &http.Client{}
 	pages := []string{"status_main.cgi", "lan_setup.cgi"}
@@ -53,15 +53,15 @@ func (h *Hongdian) Identify(orig string, ip net.IP, timeout time.Duration, retri
 		for key, value := range r {
 			switch key {
 			case "hostname":
-				s["name"] = value
+				s.Values["name"] = value
 			case "pattern":
-				s["version"] = value
+				s.Values["version"] = value
 			case "soft":
-				s["software"] = value
+				s.Values["software"] = value
 			case "hard":
-				s["firmware"] = value
+				s.Values["firmware"] = value
 			case "num":
-				s["serial"] = value
+				s.Values["serial"] = value
 			}
 		}
 	}

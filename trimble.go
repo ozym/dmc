@@ -74,7 +74,7 @@ func (t *Trimble) identify(username, password string, ip net.IP, timeout time.Du
 
 	cli := &http.Client{}
 
-	s := make(State)
+	s := State{Values: make(map[string]interface{})}
 
 	for _, n := range []string{"serialNumber", "FirmwareVersion", "RefStation"} {
 		r, err := t.show(cli, username, password, ip, n)
@@ -84,42 +84,41 @@ func (t *Trimble) identify(username, password string, ip net.IP, timeout time.Du
 		if f := strings.Fields(r); len(f) > 1 {
 			switch {
 			case strings.Contains(r, "SerialNumber"):
-				s["serial"] = strings.Replace(f[len(f)-1], "sn=", "", -1)
+				s.Values["serial"] = strings.Replace(f[len(f)-1], "sn=", "", -1)
 			case strings.Contains(r, "FirmwareVersion"):
-				s["firmware"] = strings.Replace(f[1], "version=", "", -1)
+				s.Values["firmware"] = strings.Replace(f[1], "version=", "", -1)
 			case strings.Contains(r, "RefStation"):
 				for _, a := range f {
 					if b := strings.Split(a, "="); len(b) > 1 {
 						switch b[0] {
 						case "lat":
 							if v, err := strconv.ParseFloat(b[1], 64); err == nil {
-								s["latitude"] = v
+								s.Values["latitude"] = v
 							}
 						case "lon":
 							if v, err := strconv.ParseFloat(b[1], 64); err == nil {
-								s["longitude"] = v
+								s.Values["longitude"] = v
 							}
 						case "height":
 							if v, err := strconv.ParseFloat(b[1], 64); err == nil {
-								s["height"] = v
+								s.Values["height"] = v
 							}
 						case "Code":
-							s["site"] = strings.Replace(b[1], "'", "", -1)
-							s["model"] = "Trimble NetR9"
+							s.Values["site"] = strings.Replace(b[1], "'", "", -1)
+							s.Values["model"] = "Trimble NetR9"
 						case "CmrStationName":
-							s["site"] = strings.Replace(b[1], "'", "", -1)
-							s["model"] = "Trimble NetRS"
+							s.Values["site"] = strings.Replace(b[1], "'", "", -1)
+							s.Values["model"] = "Trimble NetRS"
 						}
 					}
 
 				}
-
 			}
 		}
 	}
 
 	// had to have found a model
-	if _, ok := s["model"]; !ok {
+	if _, ok := s.Values["model"]; !ok {
 		return nil, nil
 	}
 

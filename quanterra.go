@@ -62,18 +62,18 @@ func (q *Quanterra) discover(ip net.IP, port string, timeout time.Duration) (*St
 		return nil, err
 	}
 
-	s := make(State)
+	s := State{Values: make(map[string]interface{})}
 
 	switch port {
 	case "6330":
-		s["model"] = "Quanterra Q330+"
+		s.Values["model"] = "Quanterra Q330+"
 	default:
-		s["model"] = "Quanterra Q330"
+		s.Values["model"] = "Quanterra Q330"
 	}
 
-	s["version"] = ans.Version
-	s["serial"] = ans.Serial
-	s["sysver"] = ans.SysVer
+	s.Values["version"] = ans.Version
+	s.Values["serial"] = ans.Serial
+	s.Values["sysver"] = ans.SysVer
 
 	return &s, nil
 }
