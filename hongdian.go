@@ -66,6 +66,22 @@ func (h *Hongdian) Identify(orig string, ip net.IP, timeout time.Duration, retri
 		}
 	}
 
+	if _, ok := s.Values["name"]; !ok {
+		return nil, nil
+	}
+	if _, ok := s.Values["version"]; !ok {
+		return nil, nil
+	}
+	if _, ok := s.Values["software"]; !ok {
+		return nil, nil
+	}
+	if _, ok := s.Values["firmware"]; !ok {
+		return nil, nil
+	}
+	if _, ok := s.Values["serial"]; !ok {
+		return nil, nil
+	}
+
 	return &s, nil
 }
 
